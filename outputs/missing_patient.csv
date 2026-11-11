@@ -1,0 +1,8 @@
+"column","not_available","not_applicable","unknown","discrepancy","not_evaluated","total","percent"
+"vital_status",3,0,0,0,0,3,0.5
+"death_days_to",1,285,0,0,0,286,48.7
+"last_contact_days_to",70,0,0,1,0,71,12.1
+"tumor_status",71,0,0,1,0,72,12.3
+"age_at_initial_pathologic_diagnosis",0,0,0,0,0,0,0
+"clinical_stage",5,0,0,0,0,5,0.9
+"residual_disease_largest_nodule",67,0,0,0,0,67,11.4
