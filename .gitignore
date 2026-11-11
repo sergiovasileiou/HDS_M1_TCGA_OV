@@ -1,0 +1,9 @@
+# Raw and intermediate data
+data/raw/
+data/derived/
+
+# R and RStudio clutter
+.Rhistory
+.RData
+.Rproj.user/
+.DS_Store
