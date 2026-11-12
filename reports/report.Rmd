@@ -1,0 +1,219 @@
+---
+title: "[Working title: Platinum resistance in TCGA ovarian cancer]"
+subtitle: "An analysis-ready dataset for logistic regression"
+author: "Sergios Vasileiou"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output:
+  rmdformats::readthedown:
+    css: hds_theme.css
+    highlight: breezedark
+    embed_fonts: false
+    toc_depth: 3
+    number_sections: true
+    code_folding: hide
+# bibliography: [references.bib, packages.bib]
+# csl: vancouver.csl
+link-citations: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+here::i_am("reports/report.Rmd")
+library(dplyr)
+library(here)
+library(knitr)
+library(ggplot2)
+source(here("R", "theme_hds.R"))   # palette and theme_hds()
+
+# Package citations: write a BibTeX entry for R and each package used, so the
+# reference list always matches the versions installed. Keys are "R-" plus
+# the package name, for example [@R-dplyr]. Add any new package to this list.
+packages_used <- c("base", "TCGAbiolinks", "dplyr", "here", "readxl",
+                   "knitr", "rmarkdown", "rmdformats", "renv")
+write_bib(packages_used, file = here("reports", "packages.bib"))
+
+# Outputs saved by the scripts
+table_sizes     <- read.csv(here("outputs", "table_sizes.csv"))
+missing_patient <- read.csv(here("outputs", "missing_patient.csv"))
+placeholders    <- read.csv(here("outputs", "placeholders.csv"))
+```
+
+```{=html}
+<!-- Dark mode switch (docute style). It is moved next to the report title at
+     the top of the sidebar, so it takes no space from the report.
+     Remembers the reader's choice in this browser; otherwise follows the
+     computer's light or dark setting. -->
+<button class="theme-switch" id="theme-switch" type="button" role="switch"
+        aria-checked="false" aria-label="Dark mode">
+  <span class="track"><span class="knob"></span></span>
+  <span class="mode-label">Light</span>
+</button>
+<script>
+(function () {
+  var root = document.documentElement;
+  var sw = document.getElementById("theme-switch");
+  var stored = null;
+  try { stored = localStorage.getItem("hds-theme"); } catch (e) {}
+  var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var theme = stored || (prefersDark ? "dark" : "light");
+
+  function apply(t) {
+    var dark = t === "dark";
+    root.setAttribute("data-theme", t);
+    sw.setAttribute("aria-checked", dark ? "true" : "false");
+    sw.querySelector(".mode-label").textContent = dark ? "Dark" : "Light";
+    sw.title = dark ? "Switch to light mode" : "Switch to dark mode";
+  }
+  apply(theme);
+
+  sw.addEventListener("click", function () {
+    theme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    apply(theme);
+    try { localStorage.setItem("hds-theme", theme); } catch (e) {}
+  });
+
+  // Once the page has loaded: switch next to the title, logo under the author
+  document.addEventListener("DOMContentLoaded", function () {
+    var title = document.querySelector("#sidebar h2");
+    if (title) title.appendChild(sw);
+    var footer = document.getElementById("postamble");
+    var logo = document.querySelector(".report-footer");
+    if (footer && logo) footer.appendChild(logo);
+  });
+})();
+</script>
+```
+
+<!--
+WORD BUDGET (main body, 3,000 maximum, each table or figure counts up to 150):
+Introduction 600 | Methods 800 | Results 1,200 | Conclusion 400
+The brief excludes references from the count.
+-->
+
+<!-- Coversheet: save the completed coversheet as an image and uncomment the line below -->
+<!-- ![Coversheet](coversheet.png) -->
+
+# Abstract {-}
+
+[About 250 words: background, aim, data source, approach, what the analysis-ready dataset contains, main validation findings, conclusion, with references.]
+
+# Introduction
+
+<!-- Evidence-based medicine, PICO, FINER, critical appraisal, FAIR (per the brief's figure) -->
+
+[Ovarian cancer and first-line platinum treatment. Why platinum resistance matters and how it is defined. What TCGA and the TCGA-CDR are. The gap this dataset fills. The question in PICO form and why it passes FINER.]
+
+# Methods
+
+## Data sources and provenance
+
+<!-- Metadata generation, data governance -->
+
+[The GDC BCR Biotab clinical tables (release 46.0, downloaded 11th November 2026, checksums recorded), the TCGA-CDR and the cBioPortal ov_tcga_pub study. What each contains and what each is used for.]
+
+## Governance and safety
+
+[Open-access data under the GDC publication policy. How the data were handled under the Five Safes (Table 5). No identifiers beyond TCGA barcodes.]
+
+## Data assessment approach
+
+[How the source was profiled: table sizes, placeholders and missing values, checks organised as conformance, completeness and plausibility, and the cross-table checks such as vital status.]
+
+## Phenotype definitions and analysis-ready dataset design
+
+[Unit of observation, population, index date, OS and PFI, first-line platinum treatment, platinum resistance at 6 months, covariates and their groupings. Alternatives considered. Full specifications are in the reproducibility package.]
+
+## Validation and sensitivity analyses
+
+[Agreement targets set before looking at the CDR outcome values. S1: 12-month cut-off. S2: agreement with cBioPortal (kappa). S3: patients in the model compared with those left out.]
+
+## Reproducibility
+
+[Project structure, run_all.R entry point, renv lock file, here-based paths, raw data never edited, version control on GitHub, clean-session test.]
+
+# Results
+
+<!-- EDA in R, data visualisation, research questions -->
+
+## What the source data contain
+
+The download contained `r nrow(table_sizes)` clinical tables covering `r table_sizes$patients[table_sizes$table == "clinical_patient_ov"]` patients. [Add your findings.]
+
+```{r table-sizes}
+kable(table_sizes,
+      col.names = c("Table", "Rows", "Columns", "Patients"),
+      caption = "Table 1. Raw clinical tables after removing the two label rows")
+```
+
+## Data quality findings
+
+```{r missing-table}
+missing_patient %>%
+  select(column, total, percent) %>%
+  kable(col.names = c("Column", "Missing", "Percent"),
+        caption = "Table 2. Missing values in the key patient columns")
+```
+
+```{r missing-figure, fig.height = 4, fig.cap = "Figure 1. Missing values in the key patient columns"}
+missing_patient %>%
+  mutate(column = reorder(column, percent)) %>%
+  ggplot(aes(x = percent, y = column)) +
+  geom_col(width = 0.7, fill = COL_BLUE) +
+  labs(x = "Patients with a missing value (%)", y = NULL) +
+  theme_hds()
+```
+
+[Interpret the findings that matter for the question, rather than listing them all.]
+
+## The analysis-ready dataset
+
+[Population flow, final variables, flags, structure.]
+
+## Validation
+
+[Agreement with the CDR and cBioPortal. Explain every disagreement.]
+
+## Sensitivity analyses
+
+[How much the answer depends on the definitions.]
+
+# Conclusion
+
+<!-- Research questions, critical appraisal -->
+
+[Is the dataset fit for the intended method? Residual uncertainty, limitations and bias, and how safe, FAIR and reproducible the data product is (Table 5). What another analyst needs to know. Future work.]
+
+| | How this project addresses it |
+|---|---|
+| **Safe data** | [Open-access clinical data; patients identified only by TCGA barcodes] |
+| **Safe projects** | [Educational, public-good use within the GDC publication policy] |
+| **Safe people** | [Safe Researcher training] |
+| **Safe settings** | [Raw files kept on a personal computer and never committed to git] |
+| **Safe outputs** | [Aggregate tables and model results only] |
+| **Findable** | [Source identifiers; repository on GitHub] |
+| **Accessible** | [Open data, stated access route, public repository] |
+| **Interoperable** | [CSV and data dictionary, standard units] |
+| **Reusable** | [Provenance, versioned code, phenotype specifications, licence and attribution] |
+
+: Table 5. Safety, FAIR principles and reproducibility
+
+# Use of generative artificial intelligence {-}
+
+[Tool names and versions, what each was used for, and how its output was used or changed, as the coversheet asks.]
+
+# References {-}
+
+<div id="refs"></div>
+
+# Appendix: computing environment {-}
+
+```{r session-info}
+sessionInfo()
+```
+
+<!-- Logo. Moved under the author and date in the sidebar when the page loads
+     (stays here if scripts are off). The file lives in reports/images/ and is
+     referenced with a relative path, so the report builds on any machine. -->
+<div class="report-footer">
+<img src="images/pace_logo.png" alt="University of Cambridge, Professional and Continuing Education">
+</div>

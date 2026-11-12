@@ -1,0 +1,362 @@
+/* ==========================================================================
+   HDS report theme
+   Layout from rmdformats::readthedown (fixed sidebar table of contents),
+   look and feel from docute (light, clean documentation style, dark mode),
+   colours from the personal palette.
+   ========================================================================== */
+
+/* ---- Palette ------------------------------------------------------------- */
+:root {
+  --blue:  #247BA0;
+  --sky:   #73BFE2;
+  --coral: #F07855;
+  --sand:  #D9A86C;
+  --navy:  #263746;
+  --grey:  #73858C;
+  --bg:    #F5F4F0;
+  --rose:  #D6536D;
+  --lgrey: #E2E6E5;
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --code-font: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+/* ---- Light mode (default): roles mapped to palette colours ---------------- */
+:root {
+  --page-bg: var(--bg);
+  --content-bg: #FFFFFF;
+  --sidebar-bg: var(--bg);
+  --text: var(--navy);
+  --heading: var(--navy);
+  --muted: var(--grey);
+  --accent: var(--blue);
+  --accent-hover: var(--coral);
+  --border: var(--lgrey);
+  --table-head-bg: var(--lgrey);
+  --title-bg: var(--navy);
+  --title-text: #FFFFFF;
+  --code-bg: var(--navy);
+  --code-text: #F5F4F0;
+  --output-bg: var(--bg);
+  --inline-code-bg: rgba(217, 168, 108, .18);
+  --inline-code-text: var(--navy);
+  --hover-bg: #FFFFFF;
+}
+
+/* ---- Dark mode: set by the switch (data-theme="dark" on <html>) ----------- */
+:root[data-theme="dark"] {
+  --page-bg: #17212A;
+  --content-bg: #1E2B36;
+  --sidebar-bg: #17212A;
+  --text: #E2E6E5;
+  --heading: #F5F4F0;
+  --muted: #9FB0B6;
+  --accent: var(--sky);
+  --accent-hover: var(--coral);
+  --border: #33475A;
+  --table-head-bg: #2A3B4A;
+  --title-bg: #101820;
+  --title-text: #F5F4F0;
+  --code-bg: #101820;
+  --code-text: #F5F4F0;
+  --output-bg: #17212A;
+  --inline-code-bg: rgba(217, 168, 108, .22);
+  --inline-code-text: #F3D9B5;
+  --hover-bg: #1E2B36;
+  color-scheme: dark;
+}
+
+/* ---- Page ---------------------------------------------------------------- */
+body {
+  background: var(--page-bg);
+  color: var(--text);
+  font: 16px/1.7 var(--font);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .25s, color .25s;
+}
+
+#content {
+  background: var(--content-bg);
+  max-width: 920px;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+p, #content ul, #content ol { font-size: 16px; line-height: 1.7; color: var(--text); }
+strong, b { color: var(--heading); }
+
+a, #main :not(.leaflet-control) > a {
+  color: var(--accent);
+  background-image: none;          /* remove readthedown underline animation */
+  text-decoration: none;
+  transition: color .15s;
+}
+a:hover, #main :not(.leaflet-control) > a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+  background: none;
+}
+
+/* ---- Headings (docute: light weight, h2 rule) ----------------------------- */
+h1, h2, h3, h4, h5, h6, legend {
+  font-family: var(--font);
+  color: var(--heading);
+  font-weight: 300;
+  line-height: 1.2;
+}
+h1 { font-size: 2.4rem; margin: 3rem 0 1.2rem; }
+h2 { font-size: 1.8rem; margin-top: 3rem; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.35rem; font-weight: 400; margin: 2rem 0 1rem; }
+h4, h5 { font-size: 1.1rem; font-weight: 600; color: var(--muted); }
+
+h1.title { font-weight: 300; font-size: 2.6rem; color: var(--heading); margin-top: 1rem; }
+h1.subtitle { font-weight: 300; font-size: 1.3rem; color: var(--muted); }
+.author, .date { color: var(--muted); font-size: .95rem; margin: 0; }
+
+.header-section-number { color: var(--accent); margin-right: .35em; }
+
+/* ---- Sidebar (readthedown layout, docute style) --------------------------- */
+#sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  font-size: 15px;
+}
+
+#sidebar h2 {
+  background-color: var(--title-bg);
+  color: var(--title-text);
+  font-weight: 400;
+  text-align: left;
+  padding: 18px 22px;
+  border-bottom: 4px solid var(--accent);
+  margin-bottom: 1rem;
+}
+#sidebar h2 a { color: var(--title-text); }
+
+#sidebar a {
+  color: var(--text);
+  padding: 6px 22px;
+  border-left: 3px solid transparent;
+}
+#sidebar a:hover { background-color: var(--hover-bg); color: var(--accent); text-decoration: none; }
+
+#toc ul.nav > li > a:before {      /* docute-style dot */
+  content: "";
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+  margin-right: 9px;
+  vertical-align: middle;
+}
+
+#toc ul.nav li.active > a {
+  color: var(--accent) !important;
+  font-weight: 600;
+  background: var(--hover-bg);
+  border-left: 3px solid var(--accent);
+}
+#toc ul.nav li.active > a:before { background: var(--accent); }
+
+#toc ul.nav li.active ul li a {
+  background-color: transparent !important;
+  color: var(--muted) !important;
+  border-right: none !important;
+  font-size: 14px;
+  padding-left: 40px;
+}
+#toc ul.nav li.active ul li.active a {
+  background-color: transparent !important;
+  color: var(--heading) !important;
+  font-weight: 600 !important;
+}
+
+/* No rules between contents items */
+#toc li.current, #toc li.current a, #toc li.divide-top, #toc li.divide-bottom {
+  background: transparent; border-top: none; border-bottom: none; border-right: none !important;
+}
+#toc ul li, #toc ul li a, #toc ul.nav li.active ul li a { border-top: none !important; border-bottom: none !important; }
+#toc ul.nav li.active ul li.active a { border-left: 3px solid var(--accent) !important; }
+
+#postamble, #sidebar #postamble {
+  background: var(--title-bg) !important;
+  color: var(--lgrey);
+  border-top: 4px solid var(--accent);
+}
+#postamble .author span, #postamble .date span { color: var(--sky); }
+
+#nav-top { background: var(--title-bg); }
+#nav-top span.glyphicon { color: var(--title-text); }
+
+/* ---- Code (docute: dark blocks, tinted inline code) ----------------------- */
+/* The wrapper stays visible when code is folded, so only the <pre> is dark */
+#content div.sourceCode { background: transparent !important; border: none; margin: 1rem 0; }
+#content pre, #content pre.sourceCode {
+  background: var(--code-bg) !important;
+  border: none;
+  border-radius: 6px;
+}
+#content pre code, #content pre.sourceCode code {
+  font-family: var(--code-font);
+  font-size: 13.5px;
+  color: var(--code-text);
+  background: none;
+}
+#content pre { padding: 16px 20px; margin: 1.5rem 0; }
+
+#content pre:not(.sourceCode) {      /* R output */
+  background: var(--output-bg) !important;
+  border: 1px solid var(--border);
+}
+#content pre:not(.sourceCode) code { color: var(--text); }
+
+#content code {
+  font-family: var(--code-font);
+  font-size: 88%;
+  background: var(--inline-code-bg);
+  color: var(--inline-code-text);
+  border-radius: 4px;
+  padding: 2px 5px;
+}
+
+.code-folding-btn, .btn-default.btn-xs, .btn-default {
+  background: var(--content-bg); color: var(--accent); border: 1px solid var(--border);
+  border-radius: 4px; font-size: 12px;
+}
+.dropdown-menu { background: var(--content-bg); border-color: var(--border); }
+.dropdown-menu > li > a { color: var(--text); }
+
+/* ---- Tables (docute: rounded header, light rules) ------------------------- */
+#main table:not(.dataTable) {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  margin: 1.5rem 0;
+  font-size: 14.5px;
+  border: none;
+}
+#main table:not(.dataTable) thead th {
+  background: var(--table-head-bg);
+  color: var(--heading);
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  padding: 10px 12px;
+}
+#main table:not(.dataTable) thead th:first-child { border-radius: 6px 0 0 6px; }
+#main table:not(.dataTable) thead th:last-child  { border-radius: 0 6px 6px 0; }
+#main table:not(.dataTable) td {
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 12px;
+  color: var(--text);
+  background: var(--content-bg) !important;
+}
+
+caption, .table caption, p.caption, .figure p.caption, #main table caption {
+  font-family: var(--font);
+  color: var(--muted);
+  font-size: 14px;
+  font-style: normal;
+  text-align: left;
+  caption-side: top;
+  padding-bottom: 8px;
+}
+
+/* ---- Callouts: ::: {.tip}, ::: {.note}, ::: {.warning}, ::: {.danger} ----- */
+#content .tip, #content .note, #content .warning, #content .danger {
+  background: var(--content-bg);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--blue);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 1.5rem 0;
+}
+#content .note    { border-left-color: var(--sky); }
+#content .warning { border-left-color: var(--sand); }
+#content .danger  { border-left-color: var(--rose); }
+#content .tip > :last-child, #content .note > :last-child,
+#content .warning > :last-child, #content .danger > :last-child { margin-bottom: 0; }
+
+blockquote {
+  background: var(--output-bg);
+  border-left: 5px solid var(--border);
+  color: var(--muted);
+  font-style: normal;
+}
+
+/* ---- Figures ------------------------------------------------------------- */
+.figure { margin: 1.5rem 0; }
+.figure img { border-radius: 6px; }
+:root[data-theme="dark"] .figure img { background: #FFFFFF; padding: 8px; }
+
+/* ---- Logo: under the author and date in the sidebar footer --------------- */
+.report-footer { margin: 3rem 0 1rem; text-align: center; }      /* fallback position */
+.report-footer img { max-width: 260px; width: 60%; height: auto; }
+#postamble .report-footer { margin: 12px 0 4px; text-align: left; }
+#postamble .report-footer img {
+  width: 100%;
+  max-width: 240px;
+  background: var(--bg);            /* light card: the lettering is black */
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+/* ---- Dark mode switch, next to the report title in the sidebar ----------- */
+#sidebar h2 { display: flex; align-items: flex-start; gap: 12px; }
+#sidebar h2 > a { flex: 1 1 auto; padding: 0 !important; border: none !important; }
+#sidebar h2 > a:hover { background: none; color: var(--title-text); }
+
+.theme-switch {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+}
+/* Says which mode is on: "Light" or "Dark" */
+.theme-switch .mode-label {
+  font: 600 10px/1 var(--font);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--lgrey);
+  opacity: .85;
+}
+.theme-switch:focus-visible { outline: 2px solid var(--sky); outline-offset: 3px; border-radius: 999px; }
+.theme-switch .track {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+  border-radius: 999px;
+  background: #3A4D5E;
+  transition: background-color .25s;
+}
+.theme-switch .knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  transition: transform .25s;
+}
+.theme-switch .knob::after { content: "\2600"; color: var(--sand); }        /* sun */
+.theme-switch[aria-checked="true"] .track { background: var(--blue); }
+.theme-switch[aria-checked="true"] .knob { transform: translateX(18px); }
+.theme-switch[aria-checked="true"] .knob::after { content: "\263E"; color: var(--navy); } /* moon */
+
+@media print { .theme-switch { display: none; } }
